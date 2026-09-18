@@ -68,12 +68,34 @@ def ackermann_wheel_angles(delta):
     WHEEL_OFFSET changes the effective half-track width inside each wheel's triangle.
     '''
 
+    # Straight line
+    if delta == 0:
+        return 0.0, 0.0
+
+    # Vehicle dimensions
+    L = WHEELBASE
+    half_track = (TRACK_WIDTH / 2) - WHEEL_OFFSET
+
+    # Turning radius
+    R = abs(L / math.tan(delta))
+
+    # Inner and outer wheel angles
+    inner_angle = math.atan(L / (R - half_track))
+    outer_angle = math.atan(L / (R + half_track))
+
+    # Positive delta = left turn
+    if delta > 0:
+        left_angle = inner_angle
+        right_angle = outer_angle
+
+    # Negative delta = right turn
+    else:
+        left_angle = -outer_angle
+        right_angle = -inner_angle
 
     return left_angle, right_angle
 
 
-##############################################################
-################ END OF YOUR IMPLEMENTATION ##################
 ##############################################################
 
 
