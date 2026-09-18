@@ -50,34 +50,21 @@ def ackermann_wheel_angles(delta):
     ---
     Convert a single virtual steering angle into the two real front-wheel
     angles, per the Ackermann geometry.
-
-    Input Arguments:
-    ---
-    `delta` :   [ float ]
-        Steering angle of the virtual centred front wheel, in radians.
-
-    Returns:
-    ---
-    `left_angle`  : [ float ]
-    `right_angle` : [ float ]
-        The two real front-wheel steering angles, in radians, using the
-        same sign convention as delta.
-
-    REMEMBER:
-    ---
-    WHEEL_OFFSET changes the effective half-track width inside each wheel's triangle.
     '''
 
     if delta == 0:
         return 0.0, 0.0
 
     L = WHEELBASE
-    half_track = (TRACK_WIDTH / 2) - WHEEL_OFFSET
+    half_track = (TRACK_WIDTH / 2.0) - WHEEL_OFFSET
 
-    R = abs(L / math.tan(delta))
+    R = L / math.tan(abs(delta))
 
-    inner_angle = math.atan(L / (R - half_track))
-    outer_angle = math.atan(L / (R + half_track))
+    R_inner = R - half_track
+    R_outer = R + half_track
+
+    inner_angle = math.atan(L / R_inner)
+    outer_angle = math.atan(L / R_outer)
 
     if delta > 0:
         left_angle = inner_angle
@@ -89,6 +76,8 @@ def ackermann_wheel_angles(delta):
     return left_angle, right_angle
 
 
+##############################################################
+################ END OF YOUR IMPLEMENTATION ##################
 ##############################################################
 
 
