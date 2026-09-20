@@ -46,31 +46,62 @@ WHEEL_OFFSET = 0.0275       # O: distance between kingpin axis and wheel centre.
 
 def ackermann_wheel_angles(delta):
     '''
-    Purpose:
+  Purpose:
     ---
     Convert a single virtual steering angle into the two real front-wheel
     angles, per the Ackermann geometry.
 
     Input Arguments:
     ---
-    `delta` :   [ float ]
+    `delta` : [ float ]
         Steering angle of the virtual centred front wheel, in radians.
 
     Returns:
     ---
-    `left_angle`  : [ float ]
-    `right_angle` : [ float ]
-        The two real front-wheel steering angles, in radians, using the
-        same sign convention as delta.
+    `left_angle` : [ float ]
+        Left front-wheel steering angle in radians.
 
-    REMEMBER:
-    ---
-    WHEEL_OFFSET changes the effective half-track width inside each wheel's triangle.
+    `right_angle` : [ float ]
+        Right front-wheel steering angle in radians.
     '''
 
+    # Handle the straight-ahead case separately.
+    if abs(delta) < 1e-12:
+        return 0.0, 0.0
+
+    # Convert wheel track to the effective half kingpin track.
+    half_kingpin_track = (TRACK_WIDTH / 2.0) - WHEEL_OFFSET
+
+    # Find the turning radius represented by delta.
+    radius = turning_radius(delta)
+
+    # Positive delta means a left turn.
+    if delta > 0:
+        left_angle = wheel_angle(radius - half_kingpin_track)
+        right_angle = wheel_angle(radius + half_kingpin_track)
+
+    # Negative delta means a right turn.
+    else:
+        left_angle = -wheel_angle(radius + half_kingpin_track)
+        right_angle = -wheel_angle(radius - half_kingpin_track)
 
     return left_angle, right_angle
 
+
+def turning_radius(delta):
+    '''
+    Calculate the virtual turning radius from the steering angle.
+    '''
+
+    return WHEELBASE / math.tan(abs(delta))
+
+
+def wheel_angle(radius):
+    '''
+    Calculate the steering angle corresponding to a wheel's turning radius.
+    '''
+
+    return math.atan(WHEELBASE / radius)
 
 ##############################################################
 ################ END OF YOUR IMPLEMENTATION ##################
